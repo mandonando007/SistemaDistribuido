@@ -252,7 +252,8 @@ public class Altas_Clientes extends javax.swing.JFrame {
                 pst.setString(3, txtApellidoP.getText());
                 pst.setString(4, txtApellidoM.getText());
                 pst.setString(5, txtDireccion.getText());
-                pst.setInt(6, telefono = Integer.parseInt(txtTelefono.getText()));
+                pst.setString(6, txtTelefono.getText());
+                
 
                 int x = pst.executeUpdate(); // Validamos el estado de la consulta
                 if (x > 0) {  // Si la inserción se llevo a cabo, mostramos un mensaje en un cuadro de dialogo

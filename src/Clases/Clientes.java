@@ -407,8 +407,9 @@ private int click;
                 fila[1] = rs.getString(2);
                 fila[2] = rs.getString(3);
                 fila[3] = rs.getString(4);
-                fila[4] = rs.getSQLXML(5);
-                dt.addRow(fila);
+                fila[4] = rs.getString(5);
+                fila[5] = rs.getString(6);
+              dt.addRow(fila);
             }
             jTable1.setModel(dt);
         } catch (Exception e) {
