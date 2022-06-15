@@ -265,7 +265,7 @@ public class Altas_Provedores extends javax.swing.JFrame {
             HOST = IP1;
             // Armamos la sentencia SQL de tipo inserción y se la pasamos al metodo
             mensaje = "INSERT INTO " + nomTabla
-                    + " (id_provedor, nombre, telefono, email, ciudad, direccion) VALUES ('"
+                    + " (id_proveedor, nombre, telefono, email, ciudad, direccion) VALUES ('"
                     + txtCodigo.getText() + "','" + txtNombre.getText() + "','" + txtTelefono.getText() + "','"
                     + txtEmail.getText() + "','" + txtCiudad.getText() + "','" + txtDireccion.getText() + "');";
             sockerCliente();

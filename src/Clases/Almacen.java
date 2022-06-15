@@ -378,7 +378,7 @@ private int click;
             sql = "SELECT * FROM " + nomTabla + " WHERE idProducto LIKE '%" + txtBuscar.getText() + "%'";
             visualizar(); // Mostramos los datos obtenidos
         } else {
-            HOST = IP2;
+            HOST = IP3;
             // Consulta por ID
             mensaje = "SELECT * FROM " + nomTabla + " WHERE idProducto LIKE '%" + txtBuscar.getText() + "%'";
             socketCliente();
