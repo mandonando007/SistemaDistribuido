@@ -28,6 +28,7 @@ import javax.swing.table.DefaultTableModel;
  *
  */
 public class Almacen extends javax.swing.JFrame {
+
     Conexion cc = new Conexion();
     Connection cin = cc.getConexion();
     PreparedStatement ps;
@@ -35,41 +36,40 @@ public class Almacen extends javax.swing.JFrame {
     String nomTabla, sql;
     String mensaje, respuesta;
     boolean inventario, existencia;
-    
+
     String HOST = "5000";
     int PUERTO = 5000;
-        
+
     String IP1 = "192.168.1.88"; //Tabla Inventario
     String IP2 = "192.168.1.204"; //Tabla Pedido
     String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros
-    
+
     public Almacen() {
-        
-initComponents();
-        
+
+        initComponents();
+
         vertodo();
-        
-        
-           P_buscar.setVisible(false);
-           DateTimeFormatter formateador = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+        P_buscar.setVisible(false);
+        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("HH:mm:ss");
         Runnable runnable = new Runnable() {
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Thread.sleep(500);
-                Time.setText("Hora "+formateador.format(LocalDateTime.now()));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(500);
+                        Time.setText("Hora " + formateador.format(LocalDateTime.now()));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+        };
+        Thread hilo = new Thread(runnable);
+        hilo.start();
+
     }
-};
-Thread hilo = new Thread(runnable);
-hilo.start();
-    
-    }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -84,7 +84,7 @@ hilo.start();
         B_altas = new javax.swing.JButton();
         B_modificar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaAlmacen = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         Time = new javax.swing.JLabel();
@@ -151,7 +151,7 @@ hilo.start();
         getContentPane().add(B_modificar);
         B_modificar.setBounds(450, 90, 140, 40);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaAlmacen.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -162,7 +162,7 @@ hilo.start();
                 "Codigo", "Descripción", "Piezas", "Precio"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tablaAlmacen);
 
         getContentPane().add(jScrollPane1);
         jScrollPane1.setBounds(10, 140, 1020, 520);
@@ -268,41 +268,41 @@ hilo.start();
 private int click;
     private void B_consultasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B_consultasActionPerformed
         // TODO add your handling code here:
-             click++;
-        if (click==1){
-       P_buscar.setVisible(true);
-    
-        }else{
-              P_buscar.setVisible(false);
-              click=0;
+        click++;
+        if (click == 1) {
+            P_buscar.setVisible(true);
+
+        } else {
+            P_buscar.setVisible(false);
+            click = 0;
         }
     }//GEN-LAST:event_B_consultasActionPerformed
 
     private void B_altasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B_altasActionPerformed
         // TODO add your handling code here:
-         Altas_productos p= new Altas_productos();
+        Altas_productos p = new Altas_productos();
         p.setVisible(true);
         dispose();
     }//GEN-LAST:event_B_altasActionPerformed
 
     private void B_modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B_modificarActionPerformed
         // TODO add your handling code here:
-        Modificar_producto p= new Modificar_producto();
+        Modificar_producto p = new Modificar_producto();
         p.setVisible(true);
         dispose();
     }//GEN-LAST:event_B_modificarActionPerformed
 
     private void B_volverMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_B_volverMouseClicked
         // TODO add your handling code here:
- Punto_de_venta p= new Punto_de_venta();
+        Punto_de_venta p = new Punto_de_venta();
         p.setVisible(true);
         dispose();
     }//GEN-LAST:event_B_volverMouseClicked
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-         consulta();
+        consulta();
     }//GEN-LAST:event_btnBuscarActionPerformed
-private int usuclick =0;
+    private int usuclick = 0;
     private void txtBuscarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtBuscarMouseClicked
         // TODO add your handling code here:
         txtBuscar.setForeground(new java.awt.Color(0, 0, 0));
@@ -318,20 +318,20 @@ private int usuclick =0;
 
     private void B_borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B_borrarActionPerformed
         eliminar();
-        
+
     }//GEN-LAST:event_B_borrarActionPerformed
-     
-   public void eliminar() {
-       
+
+    public void eliminar() {
+
         String cod = "";
         nomTabla = "inventario";
-        
+
         verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
         if (existencia) {
 
-            int fila = jTable1.getSelectedRow(); //Varibale que guarda el # de fila seleccionado
+            int fila = tablaAlmacen.getSelectedRow(); //Varibale que guarda el # de fila seleccionado
 
-            cod = jTable1.getValueAt(fila, 0).toString(); // Asignamos el ID del registro a la variable
+            cod = tablaAlmacen.getValueAt(fila, 0).toString(); // Asignamos el ID del registro a la variable
 
             // Pedimos confirmación de borrado
             int resp = JOptionPane.showConfirmDialog(null, "¿Esta seguro que quieres eliminar el registro?", "Alerta!", JOptionPane.YES_NO_OPTION);
@@ -355,8 +355,8 @@ private int usuclick =0;
         } else {
 
             // El código es parecido a su contraparte, con la diferencia que la acción se hará en otro equipo y NO de manera local
-            int fila = jTable1.getSelectedRow();
-            cod = jTable1.getValueAt(fila, 0).toString();
+            int fila = tablaAlmacen.getSelectedRow();
+            cod = tablaAlmacen.getValueAt(fila, 0).toString();
 
             int resp = JOptionPane.showConfirmDialog(null, "¿Esta seguro que quieres eliminar el registro?", "Alerta!", JOptionPane.YES_NO_OPTION);
             if (resp == YES_NO_OPTION) {
@@ -366,27 +366,27 @@ private int usuclick =0;
                 mensaje = "DELETE FROM " + nomTabla + " WHERE idProducto ='" + cod + "'";
                 socketCliente(); // Método que se comunicará con elervidor
             }
-        }   
-    
-        
-    }
-   public void consulta() {
-        
-    nomTabla = "inventario"; // Especificamos el nombre de la tabla
-    verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
-    if (existencia) {
-        sql = "SELECT * FROM " + nomTabla + " WHERE idProducto LIKE '%" + txtBuscar.getText() + "%'";
-                visualizar(); // Mostramos los datos obtenidos
-    }else{
-        HOST = IP2;
-                // Consulta por ID
-                mensaje = "SELECT * FROM " + nomTabla + " WHERE idProducto LIKE '%" + txtBuscar.getText() + "%'";
-                socketCliente();
         }
-        
-    }    
-    
-   public void visualizar() {
+
+    }
+
+    public void consulta() {
+
+        nomTabla = "inventario"; // Especificamos el nombre de la tabla
+        verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+        if (existencia) {
+            sql = "SELECT * FROM " + nomTabla + " WHERE idProducto LIKE '%" + txtBuscar.getText() + "%'";
+            visualizar(); // Mostramos los datos obtenidos
+        } else {
+            HOST = IP2;
+            // Consulta por ID
+            mensaje = "SELECT * FROM " + nomTabla + " WHERE idProducto LIKE '%" + txtBuscar.getText() + "%'";
+            socketCliente();
+        }
+
+    }
+
+    public void visualizar() {
 
         ResultSet rs = null;
         DefaultTableModel dt = new DefaultTableModel();
@@ -394,8 +394,8 @@ private int usuclick =0;
         dt.addColumn("Descripcion");
         dt.addColumn("Piezas");
         dt.addColumn("Precio");
-        jTable1.setModel(dt);
-        
+        tablaAlmacen.setModel(dt);
+
         try {
             Object[] fila = new Object[5];
             Statement st = cin.createStatement();
@@ -407,35 +407,35 @@ private int usuclick =0;
                 fila[3] = rs.getString(4);
                 dt.addRow(fila);
             }
-            jTable1.setModel(dt);
+            tablaAlmacen.setModel(dt);
         } catch (Exception e) {
             System.out.println("*** Error al visualizar la tabla *** ");
 
         }
 
     }
-   
-   public void vertodo(){
-       inventario = true; // Habilitamos una bandera
-       nomTabla = "inventario"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
-       
-       verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+
+    public void vertodo() {
+        inventario = true; // Habilitamos una bandera
+        nomTabla = "inventario"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
+
+        verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
         if (existencia) {
 
             sql = "SELECT * FROM " + nomTabla + ";";  // Armamos la sentencia SQL
-            
+
             visualizar(); // Método que muestra gráficammente la consulta
 
         } else {
 
             HOST = IP2; // Le pasamoa la IP al HOST con el cual se conectará el cliente
-           
+
             mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
             socketCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
         }
-   }
-    
-   public void socketCliente() {
+    }
+
+    public void socketCliente() {
 
         DefaultTableModel modelo = new DefaultTableModel(); // Definimos una tabla temporal para guardar los datos
 
@@ -443,7 +443,6 @@ private int usuclick =0;
         modelo.addColumn("Descripción");
         modelo.addColumn("Piezas");
         modelo.addColumn("Precio");
-
 
         String[] datos = new String[5]; // Declaramos un vector para guardar los datos
 
@@ -473,11 +472,9 @@ private int usuclick =0;
                 if (respuesta.contains("insertó")) {
                     JOptionPane.showMessageDialog(null, "Registro Guardado");
 
-
                 } else {
                     if (respuesta.contains("actualizó")) {
                         JOptionPane.showMessageDialog(null, "Registro Actualizado");
-
 
                     } else {
                         if (respuesta.contains("Elimino")) {
@@ -496,6 +493,10 @@ private int usuclick =0;
                     fin = respuesta.lastIndexOf(",");
                     cont = Integer.parseInt(respuesta.substring(1, 2));
                     respuesta = respuesta.substring(3, fin + 1);
+
+                    for (int x = 1; x <= cont; x++) {
+                        separarRegistros(modelo, datos);
+                    }
                 }
             }
 
@@ -509,8 +510,8 @@ private int usuclick =0;
 
         inventario = false;
     }
-   
-   public void verificarTabla(String sql) {
+
+    public void verificarTabla(String sql) {
         try {
             Statement q = cin.createStatement();
             ResultSet w = q.executeQuery(sql);
@@ -535,10 +536,96 @@ private int usuclick =0;
         }
     }
 
+    public String segmentar(String aux, DefaultTableModel modelo, String[] datos) {
+        int columna = 0, registro = 0, ultimo;
+        String col = "", col2 = "";
 
+        try {
+            columna = aux.indexOf(" ");
+            registro = aux.indexOf(",");
+            ultimo = aux.lastIndexOf(",");
+            //   System.out.println("ultimo: " +ultimo);
+            //   System.out.println("tamaño: " +aux.length());
 
-   
-   
+            //   System.out.println("registro: " +registro);
+            col = aux.substring(0, columna);
+            col2 = aux.substring(columna + 1, registro);
+
+            //  System.out.println("Columna 1: " + col);
+            //  System.out.println("Columna 2: " + col2);
+            //   MostrarTabla2(col, col2);
+            datos[0] = col;
+            //   System.out.println("columna1: " + col);
+            datos[1] = col2;
+            //   System.out.println("columna2: " + col2);
+            modelo.addRow(datos);
+
+            aux = aux.substring(registro + 1, aux.length());
+
+            //segmentar(aux);
+        } catch (Exception e) {
+
+        }
+        return aux;
+    }
+
+    public void separarRegistros(DefaultTableModel modelo, String[] datos) {
+        String registro = "";
+        int inicio = respuesta.indexOf(",");
+        int fin = respuesta.lastIndexOf(",");
+        registro = respuesta.substring(0, inicio);
+        respuesta = respuesta.substring(inicio + 1, respuesta.length());
+
+        separarColumnas(registro, modelo, datos);
+
+    }
+
+    public void separarColumnas(String registro, DefaultTableModel modelo, String[] datos) {
+        char[] vector = new char[registro.length()];
+        String aux, col;
+        int cont = 0;
+
+        //  System.out.println("repuesta " + registro);
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+                cont++;
+            }
+        }
+
+        int[] vector2 = new int[cont];
+        String[] valores = new String[cont];
+
+        int c = 0;
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+
+                vector2[c] = x;
+
+            }
+        }
+        String aux2;
+        for (int y = 0; y < cont; y++) {
+            int inicio = registro.indexOf("*");
+            aux2 = registro.substring(0, inicio);
+            registro = registro.substring(inicio + 1, registro.length());
+
+            // System.out.println("aux2: " +aux2);
+            datos[y] = aux2;
+
+            if (y == (cont - 1)) {
+                //        System.out.println("a: " +registro);
+                datos[y + 1] = registro;
+            }
+
+        }
+
+        modelo.addRow(datos);
+        tablaAlmacen.setModel(modelo);
+
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -589,7 +676,7 @@ private int usuclick =0;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tablaAlmacen;
     private javax.swing.JTextField txtBuscar;
     // End of variables declaration//GEN-END:variables
 }

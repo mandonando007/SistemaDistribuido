@@ -153,7 +153,7 @@ public class Server implements Runnable {
                 if (mensaje.contains("cliente")) {
                     Cliente();
                 } else {
-                    if (mensaje.contains("provedor")) {
+                    if (mensaje.contains("proveedor")) {
                         Proveedor();
                     } else {
                         System.out.print("No definido");
