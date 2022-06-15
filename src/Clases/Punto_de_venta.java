@@ -5,6 +5,7 @@
  */
 package Clases;
 
+import Conexion.Server;
 import Sockets.ChatBot;
 import Sockets.ChatBot2;
 
@@ -20,6 +21,9 @@ public class Punto_de_venta extends javax.swing.JFrame {
      */
     public Punto_de_venta() {
         initComponents();
+        Server s = new Server();
+        Thread t = new Thread(s);
+        t.start();
           Menu_user.setVisible(false);
     }
 

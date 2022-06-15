@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 public class TablaClientes {
     
     
-        Conectar cc = new Conectar();
+    Conectar cc = new Conectar();
     Connection cn = cc.conexion();
 
     public DefaultTableModel tabla(String valor) {

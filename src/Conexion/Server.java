@@ -1,13 +1,9 @@
 package Conexion;
 
-import Sockets.Cliente;
-import java.io.DataOutputStream;
-import java.io.BufferedReader;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
@@ -15,8 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
     
@@ -158,7 +153,7 @@ public class Server implements Runnable {
                 if (mensaje.contains("cliente")) {
                     Cliente();
                 } else {
-                    if (mensaje.contains("proveedor")) {
+                    if (mensaje.contains("provedor")) {
                         Proveedor();
                     } else {
                         System.out.print("No definido");
@@ -214,11 +209,9 @@ public class Server implements Runnable {
            System.out.println("rer " + respuesta);
            respuesta = "(" + cont + ")" + respuesta;
         } catch (SQLException ex) {
-            //   Logger.getLogger(SocketServidor.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.WARNING_MESSAGE);
         }
         System.out.println(respuesta);
-        // return respuesta;
 
     }
     
@@ -240,11 +233,13 @@ public class Server implements Runnable {
                 respuesta += datos[2] = w.getString(3) + "*";
                 respuesta += datos[3] = w.getString(4) + "*";
                 respuesta += datos[4] = w.getString(5) + "*";
+                respuesta += (datos[5] = w.getString(6)) + ",";
+
 
                 cont++;
             }
-            respuesta = "(" + cont + ")" + respuesta;
-            //    System.out.println("rer " + respuesta);
+           System.out.println("rer " + respuesta);
+           respuesta = "(" + cont + ")" + respuesta;
         } catch (SQLException ex) {
             //   Logger.getLogger(SocketServidor.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.WARNING_MESSAGE);
@@ -259,7 +254,7 @@ public class Server implements Runnable {
         int cont = 0;
         respuesta = "";
         //   String sql = buscar;
-        Object[] datos = new Object[4];
+        Object[] datos = new Object[5];
 
         try {
             Statement q = cn.createStatement();
@@ -270,17 +265,17 @@ public class Server implements Runnable {
                 respuesta += datos[0] = w.getString(1) + "*";
                 respuesta += datos[1] = w.getString(2) + "*";
                 respuesta += datos[2] = w.getString(3) + "*";
+                respuesta += datos[3] = w.getString(4) + "*";
+                respuesta += (datos[4] = w.getString(5)) + ",";
 
                 cont++;
             }
-            respuesta = "(" + cont + ")" + respuesta;
-            //    System.out.println("rer " + respuesta);
+           System.out.println("rer " + respuesta);
+           respuesta = "(" + cont + ")" + respuesta;
         } catch (SQLException ex) {
-            //   Logger.getLogger(SocketServidor.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.WARNING_MESSAGE);
         }
         System.out.println(respuesta);
-        // return respuesta;
 
     }
 }

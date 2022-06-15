@@ -6,13 +6,20 @@
 package Clases;
 
 import Conexion.Conectar;
+import Conexion.Conexion;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -21,29 +28,42 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Clientes extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Almacen
-     */
+    Conexion cc = new Conexion();
+    Connection cin = cc.getConexion();
+    PreparedStatement ps;
+    static ResultSet rs;
+    String nomTabla, sql;
+    String mensaje, respuesta;
+    boolean inventario, existencia;
+
+    String HOST = "5000";
+    int PUERTO = 5000;
+
+    String IP1 = "192.168.1.88"; //Tabla Inventario
+    String IP2 = "192.168.1.204"; //Tabla Pedido
+    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libro
+
     public Clientes() {
         initComponents();
-           P_buscar.setVisible(false);
-           
-           DateTimeFormatter formateador = DateTimeFormatter.ofPattern("HH:mm:ss");
-Runnable runnable = new Runnable() {
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Thread.sleep(500);
-                Time.setText("Hora "+formateador.format(LocalDateTime.now()));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        vertodo(); // Llamada al Metodo que nos mostrara al inicio la tabla Clientes
+        P_buscar.setVisible(false);
+
+        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("HH:mm:ss");
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(500);
+                        Time.setText("Hora " + formateador.format(LocalDateTime.now()));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
-    }
-};
-Thread hilo = new Thread(runnable);
-hilo.start();
+        };
+        Thread hilo = new Thread(runnable);
+        hilo.start();
     }
 
     /**
@@ -66,7 +86,7 @@ hilo.start();
         Time = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         P_buscar = new javax.swing.JPanel();
-        T_Con = new javax.swing.JTextField();
+        txtBuscar = new javax.swing.JTextField();
         jButton5 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -169,15 +189,15 @@ hilo.start();
         P_buscar.setBackground(new java.awt.Color(255, 255, 255));
         P_buscar.setLayout(null);
 
-        T_Con.setForeground(new java.awt.Color(153, 153, 153));
-        T_Con.setText("Escribe el codigo del producto");
-        T_Con.addMouseListener(new java.awt.event.MouseAdapter() {
+        txtBuscar.setForeground(new java.awt.Color(153, 153, 153));
+        txtBuscar.setText("Escribe el codigo del producto");
+        txtBuscar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                T_ConMouseClicked(evt);
+                txtBuscarMouseClicked(evt);
             }
         });
-        P_buscar.add(T_Con);
-        T_Con.setBounds(12, 5, 270, 30);
+        P_buscar.add(txtBuscar);
+        txtBuscar.setBounds(12, 5, 270, 30);
 
         jButton5.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/icons8_search_24px.png"))); // NOI18N
@@ -244,172 +264,385 @@ hilo.start();
 private int click;
     private void B_consultasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B_consultasActionPerformed
         // TODO add your handling code here:
-             click++;
-        if (click==1){
-       P_buscar.setVisible(true);
-    
-        }else{
-              P_buscar.setVisible(false);
-              click=0;
+        click++;
+        if (click == 1) {
+            P_buscar.setVisible(true);
+
+        } else {
+            P_buscar.setVisible(false);
+            click = 0;
         }
     }//GEN-LAST:event_B_consultasActionPerformed
 
     private void B_altasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B_altasActionPerformed
         // TODO add your handling code here:
-         Altas_Clientes p= new Altas_Clientes();
+        Altas_Clientes p = new Altas_Clientes();
         p.setVisible(true);
         dispose();
     }//GEN-LAST:event_B_altasActionPerformed
 
     private void B_modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B_modificarActionPerformed
         // TODO add your handling code here:
-        Modificar_clientes p= new Modificar_clientes();
+        Modificar_clientes p = new Modificar_clientes();
         p.setVisible(true);
         dispose();
     }//GEN-LAST:event_B_modificarActionPerformed
 
     private void B_volverMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_B_volverMouseClicked
         // TODO add your handling code here:
- Punto_de_venta p= new Punto_de_venta();
+        Punto_de_venta p = new Punto_de_venta();
         p.setVisible(true);
         dispose();
     }//GEN-LAST:event_B_volverMouseClicked
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-      consulta();
+        consulta();
     }//GEN-LAST:event_jButton5ActionPerformed
-private int usuclick =0;
-    private void T_ConMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_T_ConMouseClicked
+    private int usuclick = 0;
+    private void txtBuscarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtBuscarMouseClicked
         // TODO add your handling code here:
-           T_Con.setForeground(new java.awt.Color(0,0,0));
+        txtBuscar.setForeground(new java.awt.Color(0, 0, 0));
 
-         usuclick++;
-     
-        if (usuclick==1){
-           
+        usuclick++;
 
-            
-        
-            T_Con.setText(null);
+        if (usuclick == 1) {
 
-      
+            txtBuscar.setText(null);
+
         }
-    }//GEN-LAST:event_T_ConMouseClicked
+    }//GEN-LAST:event_txtBuscarMouseClicked
 
     private void B_borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B_borrarActionPerformed
         eliminar();
-       
-    }//GEN-LAST:event_B_borrarActionPerformed
 
-    
-     public void consulta() {
-        Conectar cc = new Conectar();
-        Connection cn = cc.conexion();
+    }//GEN-LAST:event_B_borrarActionPerformed
+    public void eliminar() {
+
+        String cod = "";
+        nomTabla = "cliente";
+
+        verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+        if (existencia) {
+
+            int fila = jTable1.getSelectedRow(); //Varibale que guarda el # de fila seleccionado
+
+            cod = jTable1.getValueAt(fila, 0).toString(); // Asignamos el ID del registro a la variable
+
+            // Pedimos confirmación de borrado
+            int resp = JOptionPane.showConfirmDialog(null, "¿Esta seguro que quieres eliminar el registro?", "Alerta!", JOptionPane.YES_NO_OPTION);
+            if (resp == YES_NO_OPTION) { // Si recibimos confirmación procedemos a borrar el registro
+                try {
+                    // Armamos la sentencia SQL
+                    PreparedStatement pst = cin.prepareStatement("DELETE FROM " + nomTabla + " WHERE id_cliente ='" + cod + "'");
+                    int x = pst.executeUpdate(); // Validamos el estado de la eliminación
+                    if (x > 0) {
+                        // Mostramos un mensaje gráfico que inidca que la operación se llevó a cabo con exito
+                        JOptionPane.showMessageDialog(null, "Ha sido borrado exitosamente", "Confirmación de borrado", JOptionPane.INFORMATION_MESSAGE);
+                        String sql = "SELECT * FROM " + nomTabla + ";"; // Mostramos todos los registros de la tabla
+                        visualizar();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+
+        } else {
+
+            // El código es parecido a su contraparte, con la diferencia que la acción se hará en otro equipo y NO de manera local
+            int fila = jTable1.getSelectedRow();
+            cod = jTable1.getValueAt(fila, 0).toString();
+
+            int resp = JOptionPane.showConfirmDialog(null, "¿Esta seguro que quieres eliminar el registro?", "Alerta!", JOptionPane.YES_NO_OPTION);
+            if (resp == YES_NO_OPTION) {
+
+                HOST = IP2; // Le pasamos la IP al HOST
+                // Armamos la sentencia SQL de tipo eliminación y se la pasamos al método que se comunicará con el servidor
+                mensaje = "DELETE FROM " + nomTabla + " WHERE id_cliente ='" + cod + "'";
+                socketCliente(); // Método que se comunicará con elervidor
+            }
+        }
+
+    }
+
+    public void consulta() {
+
+        nomTabla = "cliente"; // Especificamos el nombre de la tabla
+        verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+        if (existencia) {
+            sql = "SELECT * FROM " + nomTabla + " WHERE id_cliente LIKE '%" + txtBuscar.getText() + "%'";
+            visualizar(); // Mostramos los datos obtenidos
+
+        } else if (existencia == false) {
+            HOST = IP2;
+            // Consulta por ID
+            mensaje = "SELECT * FROM " + nomTabla + " WHERE id_cliente LIKE '%" + txtBuscar.getText() + "%'";
+            socketCliente();
+        } else { //Verificar esto
+            HOST = IP3;
+            // Consulta por ID
+            mensaje = "SELECT * FROM " + nomTabla + " WHERE id_cliente LIKE '%" + txtBuscar.getText() + "%'";
+            socketCliente();
+        }
+
+    }
+
+    public void visualizar() {
+
         ResultSet rs = null;
         DefaultTableModel dt = new DefaultTableModel();
-        dt.addColumn("IdCliente");
+        dt.addColumn("ID Cliente");
         dt.addColumn("Nombre");
-        dt.addColumn("Apellido Paterno ");
+        dt.addColumn("Apellido Paterno");
         dt.addColumn("Apellido Materno");
-        dt.addColumn("Direccion");
+        dt.addColumn("Dirección");
         dt.addColumn("Telefono");
-        dt.addColumn("Edad");
         jTable1.setModel(dt);
 
         try {
-           
-            Object[] fila = new Object[7];
-            Statement st = cn.createStatement();
-
-            rs = st.executeQuery("SELECT * FROM cliente WHERE idcliente = '" + T_Con.getText() + "'");
-
-            if (rs.next()) {
-                fila[0] = rs.getString(1);
-                fila[1] = rs.getString(2);
-                fila[2] = rs.getString(3);
-                fila[3] = rs.getString(4);
-                fila[4] = rs.getString(5);
-                fila[5] = rs.getString(6);
-                fila[6] = rs.getString(7);
-                dt.addRow(fila);
-            } else {
-                JOptionPane.showMessageDialog(null, "*** El Cliente que busca no se encuentra registrado ***");
-            }
-            jTable1.setModel(dt);
-
-        } catch (Exception e) {
-            System.out.println("*** Error al visualizar la tabla  *** ");
-
-        }
-
-    }
-    
-    
-    public void eliminar() {
-        try {
-            // Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/ventadecoches?user=root&password=");
-            Conectar cc = new Conectar();
-            Connection cn = cc.conexion();
-            int fila = jTable1.getSelectedRow();
-            String cod = "";
-            cod = jTable1.getValueAt(fila, 0).toString();
-            
-            int n = JOptionPane.showConfirmDialog(null, "¿ Esta Seguro de eliminar a " + cod + ".?", "Confirmacion", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (n == JOptionPane.OK_OPTION) {
-                
-                PreparedStatement pst = cn.prepareStatement("DELETE FROM cliente WHERE idcliente ='" + cod + "'");
-                pst.executeUpdate();
-                   JOptionPane.showMessageDialog(null, "** Eliminado **");
-                visualizar();
-                T_Con.setText("");
-                
-            }            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "** Seleccione un Cliente Para Eliminar **");
-        }
-        
-    }
-    
-    public void visualizar(){
-       Conectar cc = new Conectar();
-        Connection cn = cc.conexion();
-
-        DefaultTableModel dt = new DefaultTableModel();
-        dt.addColumn("IdProveedor");
-        dt.addColumn("Nombre");
-        dt.addColumn("Telefono");
-        dt.addColumn("Email");
-        dt.addColumn("Ciudad");
-        jTable1.setModel(dt);
-
-        try {
-            ResultSet rs = null;
-            Object[] fila = new Object[5];
-            Statement st = cn.createStatement();
-
-            rs = st.executeQuery("SELECT * FROM cliente ");
-
+            Object[] fila = new Object[6];
+            Statement st = cin.createStatement();
+            rs = st.executeQuery(sql);
             while (rs.next()) {
                 fila[0] = rs.getString(1);
                 fila[1] = rs.getString(2);
                 fila[2] = rs.getString(3);
                 fila[3] = rs.getString(4);
-                fila[4] = rs.getString(5);
+                fila[4] = rs.getSQLXML(5);
                 dt.addRow(fila);
-            } 
+            }
             jTable1.setModel(dt);
         } catch (Exception e) {
-            System.out.println("*** Error al visualizar la tabla  *** ");
+            System.out.println("*** Error al visualizar la tabla *** ");
 
         }
 
-    
-    
-    
     }
-    
-    
-    
+
+    public void vertodo() {
+        inventario = true; // Habilitamos una bandera
+        nomTabla = "cliente"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
+
+        verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+        if (existencia) {
+
+            sql = "SELECT * FROM " + nomTabla + ";";  // Armamos la sentencia SQL
+
+            visualizar(); // Método que muestra gráficammente la consulta
+
+        } else {
+
+            HOST = IP2; // Le pasamoa la IP al HOST con el cual se conectará el cliente
+
+            mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
+            socketCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
+        }
+    }
+
+    public void socketCliente() {
+
+        DefaultTableModel modelo = new DefaultTableModel(); // Definimos una tabla temporal para guardar los datos
+
+        modelo.addColumn("ID Cliente");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Apellido Paterno");
+        modelo.addColumn("Apellido Materno");
+        modelo.addColumn("Dirección");
+        modelo.addColumn("Telefono");;
+
+        String[] datos = new String[6]; // Declaramos un vector para guardar los datos
+
+        // Creamos unas variables que nos ayudarán posteriormente
+        int cont = 0, fin = 0;
+        String aux = "";
+
+        //Declaramos una variables especiales para los mensajes de entrada y salida
+        DataInputStream in;  // para las instrucciones de entrada (servidor-cliente
+        DataOutputStream out;   // para las instrucciones de salida (cliente-servidor)
+
+        try {
+            //Instacioamos la clase Socket, creamos un cliente que apunta a la IP y puerto del servidor
+            Socket sc = new Socket(HOST, PUERTO); // dichos parámetros han sido espesificados anteriormente
+
+            in = new DataInputStream(sc.getInputStream()); // variable que guarda los mensajes que manda el servidor (recibe)(respuesta)
+            out = new DataOutputStream(sc.getOutputStream()); // variableque guarda los mensajes que le manda al servidor (manda)(peticion)
+
+            out.writeUTF(mensaje); // manda mensaje al servidor (peticion)
+
+            System.out.println("Mensaje del cliente: " + mensaje); // Muestro el mensaje enviado en la ventana de Output
+
+            respuesta = in.readUTF(); // recibe el mensaje del servidor (respuesta)
+            System.out.println("Respuesta del servidor: " + respuesta); // Muestro el mensaje
+
+            if ((respuesta.contains("Conectado")) || respuesta.contains("Desconectado") || respuesta.contains("Se") || respuesta.contains("Ha")) {
+                if (respuesta.contains("insertó")) {
+                    JOptionPane.showMessageDialog(null, "Registro Guardado");
+
+                } else {
+                    if (respuesta.contains("actualizó")) {
+                        JOptionPane.showMessageDialog(null, "Registro Actualizado");
+
+                    } else {
+                        if (respuesta.contains("Elimino")) {
+                            JOptionPane.showMessageDialog(null, "Registro Eliminado");
+                        } else {
+
+                        }
+                    }
+                }
+
+            } else {
+                if (respuesta.equals("(0)")) {
+
+                } else {
+
+                    fin = respuesta.lastIndexOf(",");
+                    cont = Integer.parseInt(respuesta.substring(1, 2));
+                    respuesta = respuesta.substring(3, fin + 1);
+                }
+            }
+
+            if (respuesta.equals("")) {
+                sc.close();
+            }
+
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Servidor no encontrado - Verifique la dirección IP", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+
+        inventario = false;
+    }
+
+    public void verificarTabla(String sql) {
+        try {
+            Statement q = cin.createStatement();
+            ResultSet w = q.executeQuery(sql);
+
+            String[] consulta = new String[1];
+            String aux = "";
+
+            while (w.next()) {
+                // codigo
+                aux = consulta[0] = w.getString(1);
+            }
+
+            if (aux.isEmpty()) {
+                existencia = false;
+            } else {
+                existencia = true;
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.WARNING_MESSAGE);
+            System.out.println("Error al verificar la tabla" + ex);
+        }
+    }
+
+    //----------------------------------Antiguas
+//     public void consulta() {
+//        Conectar cc = new Conectar();
+//        Connection cn = cc.conexion();
+//        ResultSet rs = null;
+//        DefaultTableModel dt = new DefaultTableModel();
+//        dt.addColumn("IdCliente");
+//        dt.addColumn("Nombre");
+//        dt.addColumn("Apellido Paterno ");
+//        dt.addColumn("Apellido Materno");
+//        dt.addColumn("Direccion");
+//        dt.addColumn("Telefono");
+//        dt.addColumn("Edad");
+//        jTable1.setModel(dt);
+//
+//        try {
+//           
+//            Object[] fila = new Object[7];
+//            Statement st = cn.createStatement();
+//
+//            rs = st.executeQuery("SELECT * FROM cliente WHERE idcliente = '" + txtBuscar.getText() + "'");
+//
+//            if (rs.next()) {
+//                fila[0] = rs.getString(1);
+//                fila[1] = rs.getString(2);
+//                fila[2] = rs.getString(3);
+//                fila[3] = rs.getString(4);
+//                fila[4] = rs.getString(5);
+//                fila[5] = rs.getString(6);
+//                fila[6] = rs.getString(7);
+//                dt.addRow(fila);
+//            } else {
+//                JOptionPane.showMessageDialog(null, "*** El Cliente que busca no se encuentra registrado ***");
+//            }
+//            jTable1.setModel(dt);
+//
+//        } catch (Exception e) {
+//            System.out.println("*** Error al visualizar la tabla  *** ");
+//
+//        }
+//
+//    }
+//    
+//    
+//    public void eliminar() {
+//        try {
+//            // Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/ventadecoches?user=root&password=");
+//            Conectar cc = new Conectar();
+//            Connection cn = cc.conexion();
+//            int fila = jTable1.getSelectedRow();
+//            String cod = "";
+//            cod = jTable1.getValueAt(fila, 0).toString();
+//            
+//            int n = JOptionPane.showConfirmDialog(null, "¿ Esta Seguro de eliminar a " + cod + ".?", "Confirmacion", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+//            if (n == JOptionPane.OK_OPTION) {
+//                
+//                PreparedStatement pst = cn.prepareStatement("DELETE FROM cliente WHERE idcliente ='" + cod + "'");
+//                pst.executeUpdate();
+//                   JOptionPane.showMessageDialog(null, "** Eliminado **");
+//                visualizar();
+//                txtBuscar.setText("");
+//                
+//            }            
+//        } catch (Exception e) {
+//            JOptionPane.showMessageDialog(null, "** Seleccione un Cliente Para Eliminar **");
+//        }
+//        
+//    }
+//    
+//    public void visualizar(){
+//       Conectar cc = new Conectar();
+//        Connection cn = cc.conexion();
+//
+//        DefaultTableModel dt = new DefaultTableModel();
+//        dt.addColumn("IdProveedor");
+//        dt.addColumn("Nombre");
+//        dt.addColumn("Telefono");
+//        dt.addColumn("Email");
+//        dt.addColumn("Ciudad");
+//        jTable1.setModel(dt);
+//
+//        try {
+//            ResultSet rs = null;
+//            Object[] fila = new Object[5];
+//            Statement st = cn.createStatement();
+//
+//            rs = st.executeQuery("SELECT * FROM cliente ");
+//
+//            while (rs.next()) {
+//                fila[0] = rs.getString(1);
+//                fila[1] = rs.getString(2);
+//                fila[2] = rs.getString(3);
+//                fila[3] = rs.getString(4);
+//                fila[4] = rs.getString(5);
+//                dt.addRow(fila);
+//            } 
+//            jTable1.setModel(dt);
+//        } catch (Exception e) {
+//            System.out.println("*** Error al visualizar la tabla  *** ");
+//
+//        }
+//
+//    
+//    
+//    
+//    }
     /**
      * @param args the command line arguments
      */
@@ -453,7 +686,6 @@ private int usuclick =0;
     private javax.swing.JButton B_modificar;
     private javax.swing.JLabel B_volver;
     private javax.swing.JPanel P_buscar;
-    private javax.swing.JTextField T_Con;
     private javax.swing.JLabel Time;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
@@ -463,5 +695,6 @@ private int usuclick =0;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextField txtBuscar;
     // End of variables declaration//GEN-END:variables
 }

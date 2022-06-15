@@ -30,24 +30,21 @@ public class Altas_productos extends javax.swing.JFrame {
     PreparedStatement ps;
     static ResultSet rs;
     String nomTabla, sql;
-    String HOST, mensaje, respuesta, IP1, IP2, IP3;
-    int PUERTO;
+    String mensaje, respuesta;
     boolean inventario, existencia;
+    
+    String HOST = "5000";
+    int PUERTO = 5000;
+        
+    String IP1 = "192.168.1.88"; //Tabla Inventario
+    String IP2 = "192.168.1.204"; //Tabla Pedido
+    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros 
+    
     /**
      * Creates new form Altas_productos
      */
     public Altas_productos() {
        initComponents();
-        HOST = "5000";
-        PUERTO = 5000;
-        
-    String IP1 = "192.168.1.88";
-    String IP2 = "192.168.1.204";
-    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros
-        Server s = new Server();
-        Thread t = new Thread(s);
-        t.start();
-        
         vertodo();
        
     }
@@ -279,7 +276,7 @@ public class Altas_productos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     
-    public boolean consultar(String codigo){
+   public boolean consultar(String codigo){
         
         boolean cod = false;
         String sql = "SELECT * FROM "+inventario+" WHERE idproducto='" + codigo + "'";
@@ -300,13 +297,6 @@ public class Altas_productos extends javax.swing.JFrame {
             System.out.print("Error"+ex);
         }    
         return cod;
-    }
-
-    public void limpiar(){
-        txtCodigo.setText("");
-        txtNombre.setText("");
-        txtPrecio.setText("");
-        txtExistencia.setText("");
     }
     
    public void visualizar() {
@@ -456,6 +446,14 @@ public class Altas_productos extends javax.swing.JFrame {
             System.out.println("aqui " + ex);
         }
     }
+   
+   public void limpiar(){
+        txtCodigo.setText("");
+        txtNombre.setText("");
+        txtPrecio.setText("");
+        txtExistencia.setText("");
+    }
+
 
     /**
      * @param args the command line arguments

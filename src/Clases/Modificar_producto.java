@@ -5,9 +5,7 @@
  */
 package Clases;
 
-import Conexion.Conectar;
 import Conexion.Conexion;
-import Conexion.Server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -32,22 +30,19 @@ public class Modificar_producto extends javax.swing.JFrame {
     PreparedStatement ps;
     static ResultSet rs;
     String nomTabla, sql;
-    String HOST, mensaje, respuesta, IP1, IP2, IP3;
-    int PUERTO;
+    String mensaje, respuesta;
     boolean inventario, existencia;
+    
+    String HOST = "5000";
+    int PUERTO = 5000;
+        
+    String IP1 = "192.168.1.88"; //Tabla Inventario
+    String IP2 = "192.168.1.204"; //Tabla Pedido
+    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros
     
     public Modificar_producto() {
     initComponents();
     txtCodigo.setEditable(false);
-    HOST = "5000";
-    PUERTO = 5000;
-        
-    String IP1 = "192.168.1.88";
-    String IP2 = "192.168.1.204";
-    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros
-        Server s = new Server();
-        Thread t = new Thread(s);
-        t.start();
         
         vertodo();
     }
@@ -87,7 +82,7 @@ public class Modificar_producto extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         B_volver = new javax.swing.JLabel();
 
-        itemModificar.setText("MODIFICAR");
+        itemModificar.setText("Modificar");
         itemModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 itemModificarActionPerformed(evt);
@@ -138,7 +133,7 @@ public class Modificar_producto extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(0, 0, 1170, 87);
+        jPanel1.setBounds(0, 0, 1170, 89);
 
         tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -321,7 +316,7 @@ public class Modificar_producto extends javax.swing.JFrame {
 
 
     
-    public void limpiar(){
+   public void limpiar(){
         txtCodigo.setText("");
         txtNombre.setText("");
         txtPrecio.setText("");

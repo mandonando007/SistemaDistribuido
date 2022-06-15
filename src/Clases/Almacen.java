@@ -5,7 +5,6 @@
  */
 package Clases;
 
-import Conexion.Conectar;
 import Conexion.Conexion;
 import Conexion.Server;
 import java.io.DataInputStream;
@@ -19,11 +18,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -37,22 +33,19 @@ public class Almacen extends javax.swing.JFrame {
     PreparedStatement ps;
     static ResultSet rs;
     String nomTabla, sql;
-    String HOST, mensaje, respuesta, IP1, IP2, IP3;
-    int PUERTO;
+    String mensaje, respuesta;
     boolean inventario, existencia;
-    public Almacen() {
-        
-initComponents();
-        
- HOST = "5000";
- PUERTO = 5000;
+    
+    String HOST = "5000";
+    int PUERTO = 5000;
         
     String IP1 = "192.168.1.88"; //Tabla Inventario
     String IP2 = "192.168.1.204"; //Tabla Pedido
     String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros
-        Server s = new Server();
-        Thread t = new Thread(s);
-        t.start();
+    
+    public Almacen() {
+        
+initComponents();
         
         vertodo();
         
@@ -333,7 +326,7 @@ private int usuclick =0;
         String cod = "";
         nomTabla = "inventario";
         
-        comprobarExistencia("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+        verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
         if (existencia) {
 
             int fila = jTable1.getSelectedRow(); //Varibale que guarda el # de fila seleccionado
@@ -371,7 +364,7 @@ private int usuclick =0;
                 HOST = IP2; // Le pasamos la IP al HOST
                 // Armamos la sentencia SQL de tipo eliminación y se la pasamos al método que se comunicará con el servidor
                 mensaje = "DELETE FROM " + nomTabla + " WHERE idProducto ='" + cod + "'";
-                sockerCliente(); // Método que se comunicará con elervidor
+                socketCliente(); // Método que se comunicará con elervidor
             }
         }   
     
@@ -380,7 +373,7 @@ private int usuclick =0;
    public void consulta() {
         
     nomTabla = "inventario"; // Especificamos el nombre de la tabla
-    comprobarExistencia("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+    verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
     if (existencia) {
         sql = "SELECT * FROM " + nomTabla + " WHERE idProducto LIKE '%" + txtBuscar.getText() + "%'";
                 visualizar(); // Mostramos los datos obtenidos
@@ -388,7 +381,7 @@ private int usuclick =0;
         HOST = IP2;
                 // Consulta por ID
                 mensaje = "SELECT * FROM " + nomTabla + " WHERE idProducto LIKE '%" + txtBuscar.getText() + "%'";
-                sockerCliente();
+                socketCliente();
         }
         
     }    
@@ -426,7 +419,7 @@ private int usuclick =0;
        inventario = true; // Habilitamos una bandera
        nomTabla = "inventario"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
        
-       comprobarExistencia("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+       verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
         if (existencia) {
 
             sql = "SELECT * FROM " + nomTabla + ";";  // Armamos la sentencia SQL
@@ -438,11 +431,11 @@ private int usuclick =0;
             HOST = IP2; // Le pasamoa la IP al HOST con el cual se conectará el cliente
            
             mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
-            sockerCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
+            socketCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
         }
    }
     
-   public void sockerCliente() {
+   public void socketCliente() {
 
         DefaultTableModel modelo = new DefaultTableModel(); // Definimos una tabla temporal para guardar los datos
 
@@ -517,7 +510,7 @@ private int usuclick =0;
         inventario = false;
     }
    
-   public void comprobarExistencia(String sql) {
+   public void verificarTabla(String sql) {
         try {
             Statement q = cin.createStatement();
             ResultSet w = q.executeQuery(sql);
