@@ -42,9 +42,9 @@ public class Provedores extends javax.swing.JFrame {
     String HOST = "5000";
     int PUERTO = 5000;
     
-    String IP1 = "192.168.0.105"; //Tabla Inventario
+    String IP1 = "192.168.0.102"; //Tabla provedores
     String IP2 = "192.168.0.103"; //Tabla Clientes
-    String IP3 = "192.168.0.102";  // Proveedores
+    String IP3 = "192.168.0.105";  // Tabla Inventario
 
     
     
@@ -361,7 +361,7 @@ private int usuclick =0;
 
                 HOST = IP2; // Le pasamos la IP al HOST
                 // Armamos la sentencia SQL de tipo eliminación y se la pasamos al método que se comunicará con el servidor
-                mensaje = "DELETE FROM " + nomTabla + " WHERE id_cliente ='" + cod + "'";
+                mensaje = "DELETE FROM " + nomTabla + " WHERE id_proveedor ='" + cod + "'";
                 socketCliente(); // Método que se comunicará con elervidor
             }
         }
@@ -370,23 +370,24 @@ private int usuclick =0;
 
     public void consulta() {
 
-        nomTabla = "cliente"; // Especificamos el nombre de la tabla
+        nomTabla = "proveedor"; // Especificamos el nombre de la tabla
         verificarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
         if (existencia) {
             sql = "SELECT * FROM " + nomTabla + " WHERE id_proveedor LIKE '%" + txtBuscar.getText() + "%'";
             visualizar(); // Mostramos los datos obtenidos
 
-        } else if (existencia == false) {
+        } else {
             HOST = IP2;
             // Consulta por ID
             mensaje = "SELECT * FROM " + nomTabla + " WHERE id_proveedor LIKE '%" + txtBuscar.getText() + "%'";
             socketCliente();
-        } else { //Verificar esto
-            HOST = IP3;
-            // Consulta por ID
-            mensaje = "SELECT * FROM " + nomTabla + " WHERE id_proveedor LIKE '%" + txtBuscar.getText() + "%'";
-            socketCliente();
-        }
+        } 
+//        else { //Verificar esto
+//            HOST = IP3;
+//            // Consulta por ID
+//            mensaje = "SELECT * FROM " + nomTabla + " WHERE id_proveedor LIKE '%" + txtBuscar.getText() + "%'";
+//            socketCliente();
+//        }
 
     }
 
