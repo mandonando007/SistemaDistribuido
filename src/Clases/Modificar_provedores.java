@@ -306,12 +306,6 @@ public class Modificar_provedores extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_itemModificarItemStateChanged
 
-
-    public void mostrardatos(String valor) {        
-    
-            TablaProductos obj = new TablaProductos();
-            tablaProveedores.setModel(obj.tabla(valor));
-    }
     
     public boolean consultar(String codigo){
         
@@ -506,6 +500,9 @@ public class Modificar_provedores extends javax.swing.JFrame {
                     fin = respuesta.lastIndexOf(",");
                     cont = Integer.parseInt(respuesta.substring(1, 2));
                     respuesta = respuesta.substring(3, fin + 1);
+                                            for (int x = 1; x <= cont; x++) {
+                        separarRegistros(dt, datos);
+                    }
                 }
             }
 
@@ -544,6 +541,97 @@ public class Modificar_provedores extends javax.swing.JFrame {
             System.out.println("Error al comprobar existencia" + ex);
         }
     }
+   
+       public String segmentar(String aux, DefaultTableModel modelo, String[] datos) {
+        int columna = 0, registro = 0, ultimo;
+        String col = "", col2 = "";
+
+        try {
+            columna = aux.indexOf(" ");
+            registro = aux.indexOf(",");
+            ultimo = aux.lastIndexOf(",");
+            //   System.out.println("ultimo: " +ultimo);
+            //   System.out.println("tamaño: " +aux.length());
+
+            //   System.out.println("registro: " +registro);
+            col = aux.substring(0, columna);
+            col2 = aux.substring(columna + 1, registro);
+
+            //  System.out.println("Columna 1: " + col);
+            //  System.out.println("Columna 2: " + col2);
+            //   MostrarTabla2(col, col2);
+            datos[0] = col;
+            //   System.out.println("columna1: " + col);
+            datos[1] = col2;
+            //   System.out.println("columna2: " + col2);
+            modelo.addRow(datos);
+
+            aux = aux.substring(registro + 1, aux.length());
+
+            //segmentar(aux);
+        } catch (Exception e) {
+
+        }
+        return aux;
+    }
+
+    public void separarRegistros(DefaultTableModel modelo, String[] datos) {
+        String registro = "";
+        int inicio = respuesta.indexOf(",");
+        int fin = respuesta.lastIndexOf(",");
+        registro = respuesta.substring(0, inicio);
+        respuesta = respuesta.substring(inicio + 1, respuesta.length());
+
+        separarColumnas(registro, modelo, datos);
+
+    }
+
+    public void separarColumnas(String registro, DefaultTableModel modelo, String[] datos) {
+        char[] vector = new char[registro.length()];
+        String aux, col;
+        int cont = 0;
+
+        //  System.out.println("repuesta " + registro);
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+                cont++;
+            }
+        }
+
+        int[] vector2 = new int[cont];
+        String[] valores = new String[cont];
+
+        int c = 0;
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+
+                vector2[c] = x;
+
+            }
+        }
+        String aux2;
+        for (int y = 0; y < cont; y++) {
+            int inicio = registro.indexOf("*");
+            aux2 = registro.substring(0, inicio);
+            registro = registro.substring(inicio + 1, registro.length());
+
+            // System.out.println("aux2: " +aux2);
+            datos[y] = aux2;
+
+            if (y == (cont - 1)) {
+                //        System.out.println("a: " +registro);
+                datos[y + 1] = registro;
+            }
+
+        }
+
+        modelo.addRow(datos);
+        tablaProveedores.setModel(modelo);
+
+    }
+
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

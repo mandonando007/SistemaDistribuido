@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableModel;
  * @author jasam
  */
 public class Altas_productos extends javax.swing.JFrame {
+
     Conexion cc = new Conexion();
     Connection cin = cc.getConexion();
     PreparedStatement ps;
@@ -32,21 +33,21 @@ public class Altas_productos extends javax.swing.JFrame {
     String nomTabla, sql;
     String mensaje, respuesta;
     boolean inventario, existencia;
-    
+
     String HOST = "5000";
     int PUERTO = 5000;
-        
+
     String IP1 = "192.168.1.88"; //Tabla Inventario
     String IP2 = "192.168.1.204"; //Tabla Pedido
     String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros 
-    
+
     /**
      * Creates new form Altas_productos
      */
     public Altas_productos() {
-       initComponents();
+        initComponents();
         vertodo();
-       
+
     }
 
     /**
@@ -209,21 +210,21 @@ public class Altas_productos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
-        
+
         nomTabla = "inventario";
         double precio;
         comprobarExistencia("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
 
-            if (existencia) {
+        if (existencia) {
             try {
                 // Armamos la sentencia SQL que utilizaremos
-                PreparedStatement pst = cin.prepareStatement("INSERT INTO "+nomTabla
-                +" (idProducto, descripcionproducto, cantidad, preciounidad) VALUES (?,?,?,?)");
+                PreparedStatement pst = cin.prepareStatement("INSERT INTO " + nomTabla
+                        + " (idProducto, descripcionproducto, cantidad, preciounidad) VALUES (?,?,?,?)");
                 // Obtenemos los valores a insertar de los campos de texto de la interfaz gráfica
-            pst.setString(1, txtCodigo.getText());
-            pst.setString(2, txtNombre.getText());
-            pst.setString(3, txtExistencia.getText());
-            pst.setDouble(4, precio=Double.parseDouble(txtPrecio.getText()));
+                pst.setString(1, txtCodigo.getText());
+                pst.setString(2, txtNombre.getText());
+                pst.setString(3, txtExistencia.getText());
+                pst.setDouble(4, precio = Double.parseDouble(txtPrecio.getText()));
 
                 int x = pst.executeUpdate(); // Validamos el estado de la consulta
                 if (x > 0) {  // Si la inserción se llevo a cabo, mostramos un mensaje en un cuadro de dialogo
@@ -244,9 +245,9 @@ public class Altas_productos extends javax.swing.JFrame {
 
             HOST = IP2;
             // Armamos la sentencia SQL de tipo inserción y se la pasamos al metodo
-            mensaje = "INSERT INTO " + nomTabla + 
-                    "(idProducto, descripcionproducto, cantidad, preciounidad) VALUES ('" 
-                    + txtCodigo.getText() + "','" + txtNombre.getText() + "','" + txtPrecio.getText() + "','" 
+            mensaje = "INSERT INTO " + nomTabla
+                    + "(idProducto, descripcionproducto, cantidad, preciounidad) VALUES ('"
+                    + txtCodigo.getText() + "','" + txtNombre.getText() + "','" + txtPrecio.getText() + "','"
                     + txtExistencia.getText() + "');";
             sockerCliente();
             limpiar();
@@ -256,50 +257,47 @@ public class Altas_productos extends javax.swing.JFrame {
 
     private void B_volver1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_B_volver1MouseClicked
         // TODO add your handling code here:
-     Almacen p= new Almacen();
+        Almacen p = new Almacen();
         p.setVisible(true);
         dispose();
     }//GEN-LAST:event_B_volver1MouseClicked
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-    
+
         boolean codigo = consultar(txtCodigo.getText());
 
-        if(codigo == true){
+        if (codigo == true) {
             JOptionPane.showMessageDialog(rootPane, "Codigo No Disponible");
 
-        }else{
+        } else {
             JOptionPane.showMessageDialog(rootPane, "Codigo Disponible");
 
         }
-        
+
     }//GEN-LAST:event_btnBuscarActionPerformed
 
-    
-   public boolean consultar(String codigo){
-        
-        boolean cod = false;
-        String sql = "SELECT * FROM "+inventario+" WHERE idproducto='" + codigo + "'";
+    public boolean consultar(String codigo) {
 
+        boolean cod = false;
+        String sql = "SELECT * FROM " + inventario + " WHERE idproducto='" + codigo + "'";
 
         try {
             Statement st = cin.createStatement();
             ResultSet rs = st.executeQuery(sql);
-            
-            if(rs.next()){
-                cod =  true;
-            }else{
+
+            if (rs.next()) {
+                cod = true;
+            } else {
                 cod = false;
             }
 
-            
         } catch (Exception ex) {
-            System.out.print("Error"+ex);
-        }    
+            System.out.print("Error" + ex);
+        }
         return cod;
     }
-    
-   public void visualizar() {
+
+    public void visualizar() {
 
         ResultSet rs = null;
         DefaultTableModel dt = new DefaultTableModel();
@@ -308,7 +306,7 @@ public class Altas_productos extends javax.swing.JFrame {
         dt.addColumn("Piezas");
         dt.addColumn("Precio");
         tablaProductos.setModel(dt);
-        
+
         try {
             Object[] fila = new Object[5];
             Statement st = cin.createStatement();
@@ -327,16 +325,16 @@ public class Altas_productos extends javax.swing.JFrame {
         }
 
     }
-   
-   public void vertodo(){
-       inventario = true; // Habilitamos una bandera
-       nomTabla = "inventario"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
-       
-       comprobarExistencia("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+
+    public void vertodo() {
+        inventario = true; // Habilitamos una bandera
+        nomTabla = "inventario"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
+
+        comprobarExistencia("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
         if (existencia) {
 
             sql = "SELECT * FROM " + nomTabla + ";";  // Armamos la sentencia SQL
-            
+
             visualizar(); // Método que muestra gráficammente la consulta
 
         } else {
@@ -345,9 +343,9 @@ public class Altas_productos extends javax.swing.JFrame {
             mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
             sockerCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
         }
-   }
-    
-   public void sockerCliente() {
+    }
+
+    public void sockerCliente() {
 
         DefaultTableModel modelo = new DefaultTableModel(); // Definimos una tabla temporal para guardar los datos
 
@@ -355,7 +353,6 @@ public class Altas_productos extends javax.swing.JFrame {
         modelo.addColumn("Descripción");
         modelo.addColumn("Piezas");
         modelo.addColumn("Precio");
-
 
         String[] datos = new String[5]; // Declaramos un vector para guardar los datos
 
@@ -385,11 +382,9 @@ public class Altas_productos extends javax.swing.JFrame {
                 if (respuesta.contains("insertó")) {
                     JOptionPane.showMessageDialog(null, "Registro Guardado");
 
-
                 } else {
                     if (respuesta.contains("actualizó")) {
                         JOptionPane.showMessageDialog(null, "Registro Actualizado");
-
 
                     } else {
                         if (respuesta.contains("Elimino")) {
@@ -408,6 +403,10 @@ public class Altas_productos extends javax.swing.JFrame {
                     fin = respuesta.lastIndexOf(",");
                     cont = Integer.parseInt(respuesta.substring(1, 2));
                     respuesta = respuesta.substring(3, fin + 1);
+                    for (int x = 1; x <= cont; x++) {
+                        separarRegistros(modelo, datos);
+                    }
+
                 }
             }
 
@@ -421,8 +420,8 @@ public class Altas_productos extends javax.swing.JFrame {
 
         inventario = false;
     }
-   
-   public void comprobarExistencia(String sql) {
+
+    public void comprobarExistencia(String sql) {
         try {
             Statement q = cin.createStatement();
             ResultSet w = q.executeQuery(sql);
@@ -446,14 +445,103 @@ public class Altas_productos extends javax.swing.JFrame {
             System.out.println("aqui " + ex);
         }
     }
-   
-   public void limpiar(){
+
+    public void limpiar() {
         txtCodigo.setText("");
         txtNombre.setText("");
         txtPrecio.setText("");
         txtExistencia.setText("");
     }
 
+    public String segmentar(String aux, DefaultTableModel modelo, String[] datos) {
+        int columna = 0, registro = 0, ultimo;
+        String col = "", col2 = "";
+
+        try {
+            columna = aux.indexOf(" ");
+            registro = aux.indexOf(",");
+            ultimo = aux.lastIndexOf(",");
+            //   System.out.println("ultimo: " +ultimo);
+            //   System.out.println("tamaño: " +aux.length());
+
+            //   System.out.println("registro: " +registro);
+            col = aux.substring(0, columna);
+            col2 = aux.substring(columna + 1, registro);
+
+            //  System.out.println("Columna 1: " + col);
+            //  System.out.println("Columna 2: " + col2);
+            //   MostrarTabla2(col, col2);
+            datos[0] = col;
+            //   System.out.println("columna1: " + col);
+            datos[1] = col2;
+            //   System.out.println("columna2: " + col2);
+            modelo.addRow(datos);
+
+            aux = aux.substring(registro + 1, aux.length());
+
+            //segmentar(aux);
+        } catch (Exception e) {
+
+        }
+        return aux;
+    }
+
+    public void separarRegistros(DefaultTableModel modelo, String[] datos) {
+        String registro = "";
+        int inicio = respuesta.indexOf(",");
+        int fin = respuesta.lastIndexOf(",");
+        registro = respuesta.substring(0, inicio);
+        respuesta = respuesta.substring(inicio + 1, respuesta.length());
+
+        separarColumnas(registro, modelo, datos);
+
+    }
+
+    public void separarColumnas(String registro, DefaultTableModel modelo, String[] datos) {
+        char[] vector = new char[registro.length()];
+        String aux, col;
+        int cont = 0;
+
+        //  System.out.println("repuesta " + registro);
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+                cont++;
+            }
+        }
+
+        int[] vector2 = new int[cont];
+        String[] valores = new String[cont];
+
+        int c = 0;
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+
+                vector2[c] = x;
+
+            }
+        }
+        String aux2;
+        for (int y = 0; y < cont; y++) {
+            int inicio = registro.indexOf("*");
+            aux2 = registro.substring(0, inicio);
+            registro = registro.substring(inicio + 1, registro.length());
+
+            // System.out.println("aux2: " +aux2);
+            datos[y] = aux2;
+
+            if (y == (cont - 1)) {
+                //        System.out.println("a: " +registro);
+                datos[y + 1] = registro;
+            }
+
+        }
+
+        modelo.addRow(datos);
+        tablaProductos.setModel(modelo);
+
+    }
 
     /**
      * @param args the command line arguments

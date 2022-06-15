@@ -24,7 +24,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Modificar_clientes extends javax.swing.JFrame {
 
-
     Conexion cc = new Conexion();
     Connection cin = cc.getConexion();
     PreparedStatement ps;
@@ -32,14 +31,14 @@ public class Modificar_clientes extends javax.swing.JFrame {
     String nomTabla, sql;
     String mensaje, respuesta;
     boolean cliente, existencia;
-    
+
     String HOST = "5000";
     int PUERTO = 5000;
-        
+
     String IP1 = "192.168.1.88"; //Tabla Inventario
     String IP2 = "192.168.1.204"; //Tabla Pedido
     String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libro
-    
+
     public Modificar_clientes() {
         initComponents();
         vertodo(); // Metodo que nos mostrara al inicio la tabla de Clientes
@@ -231,22 +230,19 @@ public class Modificar_clientes extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-  
 
-    nomTabla = "cliente"; // Definimos el nombre de la tabla
-    int codigo = Integer.parseInt(txtCodigo.getText());
-    comprobarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
-    
-            if (existencia) {
+        nomTabla = "cliente"; // Definimos el nombre de la tabla
+        int codigo = Integer.parseInt(txtCodigo.getText());
+        comprobarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+
+        if (existencia) {
 
             try {
-             PreparedStatement pst = cin.prepareStatement("UPDATE " + nomTabla + " SET nombre='" 
-                     + txtNombre.getText() + "',apellido_paterno='" + txtApeP.getText() 
-                     + "',apellido_materno='" + txtApMa.getText() + "',direccion='" + txtDireccion.getText() +
-                     "',numero_telefono='" + txtTelefono.getText() + "' WHERE id_cliente='" 
-                     + txtCodigo.getText() + "';");
-
-
+                PreparedStatement pst = cin.prepareStatement("UPDATE " + nomTabla + " SET nombre='"
+                        + txtNombre.getText() + "',apellido_paterno='" + txtApeP.getText()
+                        + "',apellido_materno='" + txtApMa.getText() + "',direccion='" + txtDireccion.getText()
+                        + "',numero_telefono='" + txtTelefono.getText() + "' WHERE id_cliente='"
+                        + txtCodigo.getText() + "';");
 
                 // Validamos el estado de la actualización
                 int x = pst.executeUpdate();
@@ -270,11 +266,11 @@ public class Modificar_clientes extends javax.swing.JFrame {
             HOST = IP2; // Le pasamos la IP al HOST
 
             //Armamos la sentencia SQL de tipo actualización y se la pasamos al método que se comunicará con el servidor
-            mensaje = "UPDATE " + nomTabla + " SET nombre='" 
-                     + txtNombre.getText() + "',apellido_paterno='" + txtApeP.getText() 
-                     + "',apellido_materno='" + txtApMa.getText() + "',direccion='" + txtDireccion.getText() +
-                     "',numero_telefono='" + txtTelefono.getText() + "' WHERE id_cliente='" 
-                     + txtCodigo.getText() + "';";
+            mensaje = "UPDATE " + nomTabla + " SET nombre='"
+                    + txtNombre.getText() + "',apellido_paterno='" + txtApeP.getText()
+                    + "',apellido_materno='" + txtApMa.getText() + "',direccion='" + txtDireccion.getText()
+                    + "',numero_telefono='" + txtTelefono.getText() + "' WHERE id_cliente='"
+                    + txtCodigo.getText() + "';";
             socketCliente();
             txtCodigo.setEditable(true);
             limpiar();
@@ -283,32 +279,31 @@ public class Modificar_clientes extends javax.swing.JFrame {
 
     private void B_volver1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_B_volver1MouseClicked
         // TODO add your handling code here:
-     Clientes p= new Clientes();
+        Clientes p = new Clientes();
         p.setVisible(true);
         dispose();
     }//GEN-LAST:event_B_volver1MouseClicked
 
     private void itemModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemModificarActionPerformed
         if (JOptionPane.showConfirmDialog(null, "¿Esta seguro de modificar los datos?", "Confirmar Modificación",
-            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 
-        int fila = tablaClientes.getSelectedRow();
-        if (fila >= 0) {
-            txtCodigo.setText(tablaClientes.getValueAt(fila, 0).toString());
-            txtNombre.setText(tablaClientes.getValueAt(fila, 1).toString());
-            txtApeP.setText(tablaClientes.getValueAt(fila, 2).toString());
-            txtApMa.setText(tablaClientes.getValueAt(fila, 3).toString());
-            txtDireccion.setText(tablaClientes.getValueAt(fila, 4).toString());
-            txtTelefono.setText(tablaClientes.getValueAt(fila, 5).toString());
-        } else {
-            JOptionPane.showMessageDialog(null, "No selecciono fila");
-        }
+            int fila = tablaClientes.getSelectedRow();
+            if (fila >= 0) {
+                txtCodigo.setText(tablaClientes.getValueAt(fila, 0).toString());
+                txtNombre.setText(tablaClientes.getValueAt(fila, 1).toString());
+                txtApeP.setText(tablaClientes.getValueAt(fila, 2).toString());
+                txtApMa.setText(tablaClientes.getValueAt(fila, 3).toString());
+                txtDireccion.setText(tablaClientes.getValueAt(fila, 4).toString());
+                txtTelefono.setText(tablaClientes.getValueAt(fila, 5).toString());
+            } else {
+                JOptionPane.showMessageDialog(null, "No selecciono fila");
+            }
 
         }
     }//GEN-LAST:event_itemModificarActionPerformed
 
-
-    public void limpiar(){
+    public void limpiar() {
         txtCodigo.setText("");
         txtNombre.setText("");
         txtTelefono.setText("");
@@ -316,8 +311,8 @@ public class Modificar_clientes extends javax.swing.JFrame {
         txtApeP.setText("");
         txtDireccion.setText("");
     }
-    
-   public void visualizar() {
+
+    public void visualizar() {
 
         ResultSet rs = null;
         DefaultTableModel dt = new DefaultTableModel();
@@ -328,7 +323,7 @@ public class Modificar_clientes extends javax.swing.JFrame {
         dt.addColumn("Dirección");
         dt.addColumn("Telefono");
         tablaClientes.setModel(dt);
-        
+
         try {
             Object[] fila = new Object[6];
             Statement st = cin.createStatement();
@@ -350,16 +345,16 @@ public class Modificar_clientes extends javax.swing.JFrame {
         }
 
     }
-   
-   public void vertodo(){
-       cliente = true; // Habilitamos una bandera
-       nomTabla = "cliente"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
-       
-       comprobarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+
+    public void vertodo() {
+        cliente = true; // Habilitamos una bandera
+        nomTabla = "cliente"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
+
+        comprobarTabla("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
         if (existencia) {
 
             sql = "SELECT * FROM " + nomTabla + ";";  // Armamos la sentencia SQL
-            
+
             visualizar(); // Método que muestra gráficammente la consulta
 
         } else {
@@ -368,9 +363,9 @@ public class Modificar_clientes extends javax.swing.JFrame {
             mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
             socketCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
         }
-   }
-    
-   public void socketCliente() {
+    }
+
+    public void socketCliente() {
 
         DefaultTableModel dt = new DefaultTableModel(); // Definimos una tabla temporal para guardar los datos
 
@@ -380,7 +375,6 @@ public class Modificar_clientes extends javax.swing.JFrame {
         dt.addColumn("Apellido Materno");
         dt.addColumn("Dirección");
         dt.addColumn("Telefono");
-
 
         String[] datos = new String[6]; // Declaramos un vector para guardar los datos
 
@@ -410,11 +404,9 @@ public class Modificar_clientes extends javax.swing.JFrame {
                 if (respuesta.contains("insertó")) {
                     JOptionPane.showMessageDialog(null, "Registro Guardado");
 
-
                 } else {
                     if (respuesta.contains("actualizó")) {
                         JOptionPane.showMessageDialog(null, "Registro Actualizado");
-
 
                     } else {
                         if (respuesta.contains("Elimino")) {
@@ -433,6 +425,9 @@ public class Modificar_clientes extends javax.swing.JFrame {
                     fin = respuesta.lastIndexOf(",");
                     cont = Integer.parseInt(respuesta.substring(1, 2));
                     respuesta = respuesta.substring(3, fin + 1);
+                    for (int x = 1; x <= cont; x++) {
+                        separarRegistros(dt, datos);
+                    }
                 }
             }
 
@@ -446,8 +441,8 @@ public class Modificar_clientes extends javax.swing.JFrame {
 
         cliente = false;
     }
-   
-   public void comprobarTabla(String sql) {
+
+    public void comprobarTabla(String sql) {
         try {
             Statement q = cin.createStatement();
             ResultSet w = q.executeQuery(sql);
@@ -471,8 +466,97 @@ public class Modificar_clientes extends javax.swing.JFrame {
             System.out.println("Error al comprobar existencia" + ex);
         }
     }
-    
-    
+
+    public String segmentar(String aux, DefaultTableModel modelo, String[] datos) {
+        int columna = 0, registro = 0, ultimo;
+        String col = "", col2 = "";
+
+        try {
+            columna = aux.indexOf(" ");
+            registro = aux.indexOf(",");
+            ultimo = aux.lastIndexOf(",");
+            //   System.out.println("ultimo: " +ultimo);
+            //   System.out.println("tamaño: " +aux.length());
+
+            //   System.out.println("registro: " +registro);
+            col = aux.substring(0, columna);
+            col2 = aux.substring(columna + 1, registro);
+
+            //  System.out.println("Columna 1: " + col);
+            //  System.out.println("Columna 2: " + col2);
+            //   MostrarTabla2(col, col2);
+            datos[0] = col;
+            //   System.out.println("columna1: " + col);
+            datos[1] = col2;
+            //   System.out.println("columna2: " + col2);
+            modelo.addRow(datos);
+
+            aux = aux.substring(registro + 1, aux.length());
+
+            //segmentar(aux);
+        } catch (Exception e) {
+
+        }
+        return aux;
+    }
+
+    public void separarRegistros(DefaultTableModel modelo, String[] datos) {
+        String registro = "";
+        int inicio = respuesta.indexOf(",");
+        int fin = respuesta.lastIndexOf(",");
+        registro = respuesta.substring(0, inicio);
+        respuesta = respuesta.substring(inicio + 1, respuesta.length());
+
+        separarColumnas(registro, modelo, datos);
+
+    }
+
+    public void separarColumnas(String registro, DefaultTableModel modelo, String[] datos) {
+        char[] vector = new char[registro.length()];
+        String aux, col;
+        int cont = 0;
+
+        //  System.out.println("repuesta " + registro);
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+                cont++;
+            }
+        }
+
+        int[] vector2 = new int[cont];
+        String[] valores = new String[cont];
+
+        int c = 0;
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+
+                vector2[c] = x;
+
+            }
+        }
+        String aux2;
+        for (int y = 0; y < cont; y++) {
+            int inicio = registro.indexOf("*");
+            aux2 = registro.substring(0, inicio);
+            registro = registro.substring(inicio + 1, registro.length());
+
+            // System.out.println("aux2: " +aux2);
+            datos[y] = aux2;
+
+            if (y == (cont - 1)) {
+                //        System.out.println("a: " +registro);
+                datos[y + 1] = registro;
+            }
+
+        }
+
+        modelo.addRow(datos);
+        tablaClientes.setModel(modelo);
+
+    }
+
     /**
      * @param args the command line arguments
      */

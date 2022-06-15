@@ -42,9 +42,9 @@ public class Provedores extends javax.swing.JFrame {
     String HOST = "5000";
     int PUERTO = 5000;
     
-    String IP1 = "192.168.1.88"; //Tabla Inventario
-    String IP2 = "192.168.0.103"; //Tabla Pedido
-    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libro
+    String IP1 = "192.168.0.105"; //Tabla Inventario
+    String IP2 = "192.168.0.103"; //Tabla Clientes
+    String IP3 = "192.168.0.102";  // Proveedores
 
     
     
@@ -499,6 +499,9 @@ private int usuclick =0;
                     fin = respuesta.lastIndexOf(",");
                     cont = Integer.parseInt(respuesta.substring(1, 2));
                     respuesta = respuesta.substring(3, fin + 1);
+                                            for (int x = 1; x <= cont; x++) {
+                        separarRegistros(modelo, datos);
+                    }
                 }
             }
 
@@ -536,6 +539,96 @@ private int usuclick =0;
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.WARNING_MESSAGE);
             System.out.println("Error al verificar la tabla" + ex);
         }
+    }
+    
+       public String segmentar(String aux, DefaultTableModel modelo, String[] datos) {
+        int columna = 0, registro = 0, ultimo;
+        String col = "", col2 = "";
+
+        try {
+            columna = aux.indexOf(" ");
+            registro = aux.indexOf(",");
+            ultimo = aux.lastIndexOf(",");
+            //   System.out.println("ultimo: " +ultimo);
+            //   System.out.println("tamaño: " +aux.length());
+
+            //   System.out.println("registro: " +registro);
+            col = aux.substring(0, columna);
+            col2 = aux.substring(columna + 1, registro);
+
+            //  System.out.println("Columna 1: " + col);
+            //  System.out.println("Columna 2: " + col2);
+            //   MostrarTabla2(col, col2);
+            datos[0] = col;
+            //   System.out.println("columna1: " + col);
+            datos[1] = col2;
+            //   System.out.println("columna2: " + col2);
+            modelo.addRow(datos);
+
+            aux = aux.substring(registro + 1, aux.length());
+
+            //segmentar(aux);
+        } catch (Exception e) {
+
+        }
+        return aux;
+    }
+
+    public void separarRegistros(DefaultTableModel modelo, String[] datos) {
+        String registro = "";
+        int inicio = respuesta.indexOf(",");
+        int fin = respuesta.lastIndexOf(",");
+        registro = respuesta.substring(0, inicio);
+        respuesta = respuesta.substring(inicio + 1, respuesta.length());
+
+        separarColumnas(registro, modelo, datos);
+
+    }
+
+    public void separarColumnas(String registro, DefaultTableModel modelo, String[] datos) {
+        char[] vector = new char[registro.length()];
+        String aux, col;
+        int cont = 0;
+
+        //  System.out.println("repuesta " + registro);
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+                cont++;
+            }
+        }
+
+        int[] vector2 = new int[cont];
+        String[] valores = new String[cont];
+
+        int c = 0;
+        for (int x = 0; x < registro.length(); x++) {
+            aux = String.valueOf(vector[x] = registro.charAt(x));
+            if (aux.equals("*")) {
+
+                vector2[c] = x;
+
+            }
+        }
+        String aux2;
+        for (int y = 0; y < cont; y++) {
+            int inicio = registro.indexOf("*");
+            aux2 = registro.substring(0, inicio);
+            registro = registro.substring(inicio + 1, registro.length());
+
+            // System.out.println("aux2: " +aux2);
+            datos[y] = aux2;
+
+            if (y == (cont - 1)) {
+                //        System.out.println("a: " +registro);
+                datos[y + 1] = registro;
+            }
+
+        }
+
+        modelo.addRow(datos);
+        jTable1.setModel(modelo);
+
     }
 
     
