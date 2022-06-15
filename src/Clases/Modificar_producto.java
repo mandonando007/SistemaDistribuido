@@ -36,9 +36,9 @@ public class Modificar_producto extends javax.swing.JFrame {
     String HOST = "5000";
     int PUERTO = 5000;
         
-    String IP1 = "192.168.1.88"; //Tabla Inventario
-    String IP2 = "192.168.1.204"; //Tabla Pedido
-    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros
+    String IP1 = "192.168.0.102"; //Tabla provedores
+    String IP2 = "192.168.0.103"; //Tabla Clientes
+    String IP3 = "192.168.0.105";  // Tabla Inventario
     
     public Modificar_producto() {
     initComponents();
@@ -270,7 +270,7 @@ public class Modificar_producto extends javax.swing.JFrame {
 
         } else {
 
-            HOST = IP2; // Le pasamos la IP al HOST
+            HOST = IP3; // Le pasamos la IP al HOST
 
             //Armamos la sentencia SQL de tipo actualización y se la pasamos al método que se comunicará con el servidor
             mensaje = "UPDATE " + nomTabla + " SET descripcionproducto='" + txtNombre.getText() + "',preciounidad='" + txtPrecio.getText() + "',cantidad='" + txtExistencia.getText() + "' WHERE idProducto='" + txtCodigo.getText() + "';";
@@ -365,7 +365,7 @@ public class Modificar_producto extends javax.swing.JFrame {
 
         } else {
 
-            HOST = IP1; // Le pasamoa la IP al HOST con el cual se conectará el cliente
+            HOST = IP3; // Le pasamoa la IP al HOST con el cual se conectará el cliente
             mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
             sockerCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
         }

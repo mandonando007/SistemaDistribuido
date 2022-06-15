@@ -36,9 +36,9 @@ public class Altas_Provedores extends javax.swing.JFrame {
     String HOST = "5000";
     int PUERTO = 5000;
 
-    String IP1 = "192.168.1.88"; //Tabla Inventario
-    String IP2 = "192.168.1.204"; //Tabla Pedido
-    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros 
+    String IP1 = "192.168.0.102"; //Tabla provedores
+    String IP2 = "192.168.0.103"; //Tabla Clientes
+    String IP3 = "192.168.0.105";  // Tabla Inventario 
 
     public Altas_Provedores() {
         initComponents();
@@ -262,7 +262,7 @@ public class Altas_Provedores extends javax.swing.JFrame {
             }
         } else {
 
-            HOST = IP2;
+            HOST = IP1;
             // Armamos la sentencia SQL de tipo inserción y se la pasamos al metodo
             mensaje = "INSERT INTO " + nomTabla
                     + " (id_provedor, nombre, telefono, email, ciudad, direccion) VALUES ('"
@@ -487,20 +487,13 @@ public class Altas_Provedores extends javax.swing.JFrame {
             columna = aux.indexOf(" ");
             registro = aux.indexOf(",");
             ultimo = aux.lastIndexOf(",");
-            //   System.out.println("ultimo: " +ultimo);
-            //   System.out.println("tamaño: " +aux.length());
 
-            //   System.out.println("registro: " +registro);
             col = aux.substring(0, columna);
             col2 = aux.substring(columna + 1, registro);
 
-            //  System.out.println("Columna 1: " + col);
-            //  System.out.println("Columna 2: " + col2);
-            //   MostrarTabla2(col, col2);
+
             datos[0] = col;
-            //   System.out.println("columna1: " + col);
             datos[1] = col2;
-            //   System.out.println("columna2: " + col2);
             modelo.addRow(datos);
 
             aux = aux.substring(registro + 1, aux.length());

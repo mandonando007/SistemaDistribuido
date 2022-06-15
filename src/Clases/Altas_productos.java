@@ -37,9 +37,9 @@ public class Altas_productos extends javax.swing.JFrame {
     String HOST = "5000";
     int PUERTO = 5000;
 
-    String IP1 = "192.168.1.88"; //Tabla Inventario
-    String IP2 = "192.168.1.204"; //Tabla Pedido
-    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros 
+    String IP1 = "192.168.0.102"; //Tabla provedores
+    String IP2 = "192.168.0.103"; //Tabla Clientes
+    String IP3 = "192.168.0.105";  // Tabla Inventario
 
     /**
      * Creates new form Altas_productos
@@ -243,7 +243,7 @@ public class Altas_productos extends javax.swing.JFrame {
             }
         } else {
 
-            HOST = IP2;
+            HOST = IP3;
             // Armamos la sentencia SQL de tipo inserción y se la pasamos al metodo
             mensaje = "INSERT INTO " + nomTabla
                     + "(idProducto, descripcionproducto, cantidad, preciounidad) VALUES ('"
@@ -339,7 +339,7 @@ public class Altas_productos extends javax.swing.JFrame {
 
         } else {
 
-            HOST = IP1; // Le pasamoa la IP al HOST con el cual se conectará el cliente
+            HOST = IP3; // Le pasamoa la IP al HOST con el cual se conectará el cliente
             mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
             sockerCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
         }

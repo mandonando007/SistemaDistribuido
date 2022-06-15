@@ -359,7 +359,7 @@ private int usuclick =0;
             int resp = JOptionPane.showConfirmDialog(null, "¿Esta seguro que quieres eliminar el registro?", "Alerta!", JOptionPane.YES_NO_OPTION);
             if (resp == YES_NO_OPTION) {
 
-                HOST = IP2; // Le pasamos la IP al HOST
+                HOST = IP1; // Le pasamos la IP al HOST
                 // Armamos la sentencia SQL de tipo eliminación y se la pasamos al método que se comunicará con el servidor
                 mensaje = "DELETE FROM " + nomTabla + " WHERE id_proveedor ='" + cod + "'";
                 socketCliente(); // Método que se comunicará con elervidor
@@ -377,7 +377,7 @@ private int usuclick =0;
             visualizar(); // Mostramos los datos obtenidos
 
         } else {
-            HOST = IP2;
+            HOST = IP1;
             // Consulta por ID
             mensaje = "SELECT * FROM " + nomTabla + " WHERE id_proveedor LIKE '%" + txtBuscar.getText() + "%'";
             socketCliente();
@@ -434,7 +434,7 @@ private int usuclick =0;
 
         } else {
 
-            HOST = IP2; // Le pasamoa la IP al HOST con el cual se conectará el cliente
+            HOST = IP1; // Le pasamoa la IP al HOST con el cual se conectará el cliente
 
             mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
             socketCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor

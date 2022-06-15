@@ -40,9 +40,9 @@ public class Almacen extends javax.swing.JFrame {
     String HOST = "5000";
     int PUERTO = 5000;
 
-    String IP1 = "192.168.1.88"; //Tabla Inventario
-    String IP2 = "192.168.1.204"; //Tabla Pedido
-    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros
+    String IP1 = "192.168.0.102"; //Tabla provedores
+    String IP2 = "192.168.0.103"; //Tabla Clientes
+    String IP3 = "192.168.0.105";  // Tabla Inventario
 
     public Almacen() {
 
@@ -361,7 +361,7 @@ private int click;
             int resp = JOptionPane.showConfirmDialog(null, "¿Esta seguro que quieres eliminar el registro?", "Alerta!", JOptionPane.YES_NO_OPTION);
             if (resp == YES_NO_OPTION) {
 
-                HOST = IP2; // Le pasamos la IP al HOST
+                HOST = IP3; // Le pasamos la IP al HOST
                 // Armamos la sentencia SQL de tipo eliminación y se la pasamos al método que se comunicará con el servidor
                 mensaje = "DELETE FROM " + nomTabla + " WHERE idProducto ='" + cod + "'";
                 socketCliente(); // Método que se comunicará con elervidor
@@ -428,7 +428,7 @@ private int click;
 
         } else {
 
-            HOST = IP2; // Le pasamoa la IP al HOST con el cual se conectará el cliente
+            HOST = IP3; // Le pasamoa la IP al HOST con el cual se conectará el cliente
 
             mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
             socketCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor

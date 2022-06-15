@@ -39,9 +39,9 @@ public class Clientes extends javax.swing.JFrame {
     String HOST = "5000";
     int PUERTO = 5000;
 
-    String IP1 = "192.168.1.88"; //Tabla Inventario
-    String IP2 = "192.168.1.204"; //Tabla Pedido
-    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libro
+    String IP1 = "192.168.0.102"; //Tabla provedores
+    String IP2 = "192.168.0.103"; //Tabla Clientes
+    String IP3 = "192.168.0.105";  // Tabla Inventario
 
     public Clientes() {
         initComponents();
@@ -372,13 +372,8 @@ private int click;
             sql = "SELECT * FROM " + nomTabla + " WHERE id_cliente LIKE '%" + txtBuscar.getText() + "%'";
             visualizar(); // Mostramos los datos obtenidos
 
-        } else if (existencia == false) {
+        } else {
             HOST = IP2;
-            // Consulta por ID
-            mensaje = "SELECT * FROM " + nomTabla + " WHERE id_cliente LIKE '%" + txtBuscar.getText() + "%'";
-            socketCliente();
-        } else { //Verificar esto
-            HOST = IP3;
             // Consulta por ID
             mensaje = "SELECT * FROM " + nomTabla + " WHERE id_cliente LIKE '%" + txtBuscar.getText() + "%'";
             socketCliente();
