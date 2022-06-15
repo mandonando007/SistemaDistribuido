@@ -1,5 +1,5 @@
 package Conexion;
-package sockets.conexion;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;

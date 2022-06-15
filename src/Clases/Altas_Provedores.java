@@ -6,11 +6,18 @@
 package Clases;
 
 import Conexion.Conectar;
+import Conexion.Conexion;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,15 +25,27 @@ import javax.swing.JOptionPane;
  */
 public class Altas_Provedores extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Altas_productos
-     */
+     Conexion cc = new Conexion();
+    Connection cin = cc.getConexion();
+    PreparedStatement ps;
+    static ResultSet rs;
+    String nomTabla, sql;
+    String mensaje, respuesta;
+    boolean proveedor, existencia;
+
+    String HOST = "5000";
+    int PUERTO = 5000;
+
+    String IP1 = "192.168.1.88"; //Tabla Inventario
+    String IP2 = "192.168.1.204"; //Tabla Pedido
+    String IP3 = "10.10.4.218";  // Servidor 3  Tabla:Libros 
+    
+    
     public Altas_Provedores() {
         initComponents();
-      //  mostrardatos("");
+        vertodo();
     }
-    Conectar cc = new Conectar();
-    Connection cn = cc.conexion();
+  
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -43,20 +62,20 @@ public class Altas_Provedores extends javax.swing.JFrame {
         btnBuscar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        txtPrecio = new javax.swing.JTextField();
+        txtTelefono = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaProductos = 
-        tablaProductos = new javax.swing.JTable(){
+        tablaProveedores = 
+        tablaProveedores = new javax.swing.JTable(){
             public boolean isCellEditable(int rowIndex, int colIndex) {
                 return false; //Disallow the editing of any cell
             }
         };
         jLabel6 = new javax.swing.JLabel();
-        txtPrecio1 = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        txtPrecio2 = new javax.swing.JTextField();
+        txtDireccion = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        txtPrecio3 = new javax.swing.JTextField();
+        txtCiudad = new javax.swing.JTextField();
         btnAlta = new javax.swing.JButton();
         txtNombre = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
@@ -106,7 +125,7 @@ public class Altas_Provedores extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(0, 0, 1240, 89);
+        jPanel1.setBounds(0, 0, 1240, 82);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setLayout(null);
@@ -134,10 +153,10 @@ public class Altas_Provedores extends javax.swing.JFrame {
         jLabel4.setText("Email");
         jPanel2.add(jLabel4);
         jLabel4.setBounds(10, 260, 150, 30);
-        jPanel2.add(txtPrecio);
-        txtPrecio.setBounds(250, 390, 200, 30);
+        jPanel2.add(txtTelefono);
+        txtTelefono.setBounds(250, 390, 200, 30);
 
-        tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
+        tablaProveedores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
                 {},
@@ -148,7 +167,7 @@ public class Altas_Provedores extends javax.swing.JFrame {
 
             }
         ));
-        jScrollPane1.setViewportView(tablaProductos);
+        jScrollPane1.setViewportView(tablaProveedores);
 
         jPanel2.add(jScrollPane1);
         jScrollPane1.setBounds(460, 10, 770, 550);
@@ -156,22 +175,22 @@ public class Altas_Provedores extends javax.swing.JFrame {
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/icons8_company_127px_1.png"))); // NOI18N
         jPanel2.add(jLabel6);
         jLabel6.setBounds(160, 10, 130, 110);
-        jPanel2.add(txtPrecio1);
-        txtPrecio1.setBounds(10, 300, 430, 30);
+        jPanel2.add(txtEmail);
+        txtEmail.setBounds(10, 300, 430, 30);
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel8.setText("Direccion");
         jPanel2.add(jLabel8);
         jLabel8.setBounds(20, 440, 130, 30);
-        jPanel2.add(txtPrecio2);
-        txtPrecio2.setBounds(10, 480, 440, 30);
+        jPanel2.add(txtDireccion);
+        txtDireccion.setBounds(10, 480, 440, 30);
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel9.setText("Ciudad");
         jPanel2.add(jLabel9);
         jLabel9.setBounds(20, 350, 130, 30);
-        jPanel2.add(txtPrecio3);
-        txtPrecio3.setBounds(10, 390, 200, 30);
+        jPanel2.add(txtCiudad);
+        txtCiudad.setBounds(10, 390, 200, 30);
 
         btnAlta.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnAlta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/icons8_sell_50px.png"))); // NOI18N
@@ -208,35 +227,51 @@ public class Altas_Provedores extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAltaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAltaActionPerformed
-  
-        double precio;
-        boolean codigo = consultar(txtCodigo.getText());
-            String a;
-            
-            if(codigo == false){
-        try {
-            PreparedStatement pst = cn.prepareStatement
-        ("INSERT INTO inventario (idproducto, descripcionproducto, cantidad, preciounidad) VALUES (?,?,?,?)");
-            pst.setString(1, txtCodigo.getText());
-            pst.setString(2, txtNombre.getText());
-        
-            pst.setDouble(4, precio=Double.parseDouble(txtPrecio.getText()));
+         int telefono;
+        nomTabla = "proveedor";
+        comprobarExistencia("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
 
+        if (existencia) {
 
-            int i=pst.executeUpdate();
-            if(i>0){
-                JOptionPane.showMessageDialog(rootPane, "Se Guardo Correctamente");
-                mostrardatos("");
-                limpiar();
+            try {
+                // Armamos la sentencia SQL que utilizaremos
+                PreparedStatement pst = cin.prepareStatement("INSERT INTO " + nomTabla
+                        + " (id_proveedor, nombre, telefono, email, ciudad, direccion) "
+                        + "VALUES (?,?,?,?,?,?)");
+                // Obtenemos los valores a insertar de los campos de texto de la interfaz gráfica
+                pst.setString(1, txtCodigo.getText());
+                pst.setString(2, txtNombre.getText());
+                pst.setString(3, txtTelefono.getText());
+                pst.setString(4, txtEmail.getText());
+                pst.setString(5, txtCiudad.getText());
+                pst.setString(6, txtDireccion.getText());  
+
+                  int x = pst.executeUpdate(); // Validamos el estado de la consulta
+                if (x > 0) {  // Si la inserción se llevo a cabo, mostramos un mensaje en un cuadro de dialogo
+                    JOptionPane.showMessageDialog(null, "Se guardó correctarmente");
+
+                    // Si el registro se hizo correctamente, mostramos todo el contenido de la BDD
+                    sql = "SELECT * FROM " + nomTabla + ";";
+
+                    limpiar();
+
+                    visualizar(); // Mostramos los datos
+                }
+            } catch (Exception we) { // Cualquier error arrojado por la BDD será contenido aqui
+                // Mostramos de manera gráfica dicho error
+                JOptionPane.showMessageDialog(null, we, "Error", JOptionPane.WARNING_MESSAGE);
             }
+        } else {
 
-            
-        } catch (Exception ex) {
-            System.out.print("No se guardo"+ex);
+            HOST = IP2;
+            // Armamos la sentencia SQL de tipo inserción y se la pasamos al metodo
+            mensaje = "INSERT INTO " + nomTabla
+                        + " (id_provedor, nombre, telefono, email, ciudad, direccion) VALUES ('"
+                    + txtCodigo.getText() + "','" + txtNombre.getText() + "','" + txtTelefono.getText() + "','"
+                    + txtEmail.getText() + "','" + txtCiudad.getText() + "','" + txtDireccion.getText() + "');";
+            sockerCliente();
+            limpiar();
         }
-            }else{
-                JOptionPane.showMessageDialog(null,"Codigo No Disponible, No se Guardo", "Error", JOptionPane.ERROR_MESSAGE);
-            }
     }//GEN-LAST:event_btnAltaActionPerformed
 
     private void B_volver1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_B_volver1MouseClicked
@@ -260,41 +295,188 @@ public class Altas_Provedores extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnBuscarActionPerformed
 
+    
+      public boolean consultar(String codigo) {
 
-    public void mostrardatos(String valor) {        
-    
-            TablaProductos obj = new TablaProductos();
-            tablaProductos.setModel(obj.tabla(valor));
-    }
-    
-    public boolean consultar(String codigo){
-        
         boolean cod = false;
-        String sql = "SELECT * FROM inventario WHERE idproducto='" + codigo + "'";
-
+        String sql = "SELECT * FROM " + proveedor + " WHERE id_proveedor='" + codigo + "'";
 
         try {
-            Statement st = cn.createStatement();
+            Statement st = cin.createStatement();
             ResultSet rs = st.executeQuery(sql);
-            
-            if(rs.next()){
-                cod =  true;
-            }else{
+
+            if (rs.next()) {
+                cod = true;
+            } else {
                 cod = false;
             }
 
-            
         } catch (Exception ex) {
-            System.out.print("Error"+ex);
-        }    
+            System.out.print("Error" + ex);
+        }
         return cod;
     }
 
+    public void visualizar() {
+
+        ResultSet rs = null;
+        DefaultTableModel dt = new DefaultTableModel();
+        dt.addColumn("ID Proveedor");
+        dt.addColumn("Nombre");
+        dt.addColumn("Telefono");
+        dt.addColumn("Email");
+        dt.addColumn("Ciudad");
+        dt.addColumn("Dirección");
+      
+        tablaProveedores.setModel(dt);
+
+        try {
+            Object[] fila = new Object[6];
+            Statement st = cin.createStatement();
+            rs = st.executeQuery(sql);
+            while (rs.next()) {
+                fila[0] = rs.getString(1);
+                fila[1] = rs.getString(2);
+                fila[2] = rs.getString(3);
+                fila[3] = rs.getString(4);
+                fila[4] = rs.getString(5);
+                fila[5] = rs.getString(6);
+                dt.addRow(fila);
+            }
+            tablaProveedores.setModel(dt);
+        } catch (Exception e) {
+            System.out.println("*** Error al visualizar la tabla *** ");
+
+        }
+
+    }
+
+    public void vertodo() {
+        proveedor = true; // Habilitamos una bandera
+        nomTabla = "proveedor"; // Especificacmos el nombre de la tabla de la cual se requieren los datos
+
+        comprobarExistencia("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME = '" + nomTabla + "'");
+        if (existencia) {
+
+            sql = "SELECT * FROM " + nomTabla + ";";  // Armamos la sentencia SQL
+
+            visualizar(); // Método que muestra gráficammente la consulta
+
+        } else {
+
+            HOST = IP1; // Le pasamoa la IP al HOST con el cual se conectará el cliente
+            mensaje = "SELECT * FROM " + nomTabla + ";"; // Armamos la sentencia SQL
+            sockerCliente(); // Llamamos el método que se encargará de la comunicación entre el cliente y el servidor
+        }
+    }
+
+    public void sockerCliente() {
+
+        DefaultTableModel dt = new DefaultTableModel(); // Definimos una tabla temporal para guardar los datos
+
+        dt.addColumn("ID Proveedor");
+        dt.addColumn("Nombre");
+        dt.addColumn("Telefono");
+        dt.addColumn("Email");
+        dt.addColumn("Ciudad");
+        dt.addColumn("Dirección");
+
+        String[] datos = new String[6]; // Declaramos un vector para guardar los datos
+
+        // Creamos unas variables que nos ayudarán posteriormente
+        int cont = 0, fin = 0;
+        String aux = "";
+
+        //Declaramos una variables especiales para los mensajes de entrada y salida
+        DataInputStream in;  // para las instrucciones de entrada (seridor-cliente
+        DataOutputStream out;   // para las instrucciones de salida (cliente-servidor)
+
+        try {
+            //Instacioamos la clase Socket, creamos un cliente que apunta a la IP y puerto del servidor
+            Socket sc = new Socket(HOST, PUERTO); // dichos parámetros han sido especificados anteriormente
+
+            in = new DataInputStream(sc.getInputStream()); // variable que guarda los mensajes que manda el servidor (recibe)(respuesta)
+            out = new DataOutputStream(sc.getOutputStream()); // variableque guarda los mensajes que le manda al servidor (manda)(peticion)
+
+            out.writeUTF(mensaje); // manda mensaje al servidor (peticion)
+
+            System.out.println("Mensaje del cliente: " + mensaje); // Muestro el mensaje enviado en la ventana de Output
+
+            respuesta = in.readUTF(); // recibe el mensaje del servidor (respuesta)
+            System.out.println("Respuesta del servidor: " + respuesta); // Muestro el mensaje
+
+            if ((respuesta.contains("Conectado")) || respuesta.contains("Desconectado") || respuesta.contains("Se") || respuesta.contains("Ha")) {
+                if (respuesta.contains("insertó")) {
+                    JOptionPane.showMessageDialog(null, "Registro Guardado");
+
+                } else {
+                    if (respuesta.contains("actualizó")) {
+                        JOptionPane.showMessageDialog(null, "Registro Actualizado");
+
+                    } else {
+                        if (respuesta.contains("Elimino")) {
+                            JOptionPane.showMessageDialog(null, "Registro Eliminado");
+                        } else {
+
+                        }
+                    }
+                }
+
+            } else {
+                if (respuesta.equals("(0)")) {
+
+                } else {
+
+                    fin = respuesta.lastIndexOf(",");
+                    cont = Integer.parseInt(respuesta.substring(1, 2));
+                    respuesta = respuesta.substring(3, fin + 1);
+                }
+            }
+
+            if (respuesta.equals("")) {
+                sc.close();
+            }
+
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Servidor no encontrado - Verifique la dirección IP", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+
+        proveedor = false;
+    }
+
+    public void comprobarExistencia(String sql) {
+        try {
+            Statement q = cin.createStatement();
+            ResultSet w = q.executeQuery(sql);
+
+            String[] consulta = new String[1];
+            String aux = "";
+
+            while (w.next()) {
+                // codigo
+                aux = consulta[0] = w.getString(1);
+            }
+
+            if (aux.isEmpty()) {
+                existencia = false;
+            } else {
+                existencia = true;
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.WARNING_MESSAGE);
+            System.out.println("aqui " + ex);
+        }
+    }
+
+    
     public void limpiar(){
         txtCodigo.setText("");
         txtNombre.setText("");
-        txtPrecio.setText("");
-
+        txtTelefono.setText("");
+        txtDireccion.setText("");
+        txtEmail.setText("");
+        txtCiudad.setText("");
     }
     /**
      * @param args the command line arguments
@@ -349,12 +531,12 @@ public class Altas_Provedores extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tablaProductos;
+    private javax.swing.JTable tablaProveedores;
+    private javax.swing.JTextField txtCiudad;
     private javax.swing.JTextField txtCodigo;
+    private javax.swing.JTextField txtDireccion;
+    private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtNombre;
-    private javax.swing.JTextField txtPrecio;
-    private javax.swing.JTextField txtPrecio1;
-    private javax.swing.JTextField txtPrecio2;
-    private javax.swing.JTextField txtPrecio3;
+    private javax.swing.JTextField txtTelefono;
     // End of variables declaration//GEN-END:variables
 }
